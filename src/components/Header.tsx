@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "./Logo";
+import { ThemeToggle } from "./ThemeToggle";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -38,6 +39,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-4 text-foreground/80">
+          <ThemeToggle />
           <Link to="/catalogue" className="hidden sm:inline-flex" aria-label="Recherche"><Search className="h-5 w-5" /></Link>
           <Link to={user ? "/favoris" : "/login"} aria-label="Favoris"><Heart className="h-5 w-5" /></Link>
           <Link to={user ? "/login" : "/login"} aria-label="Compte"><User className="h-5 w-5" /></Link>

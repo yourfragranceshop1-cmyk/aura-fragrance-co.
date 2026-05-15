@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { FavoritesProvider } from "@/contexts/FavoritesContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 function NotFoundComponent() {
   return (
@@ -78,14 +79,16 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <FavoritesProvider>
-          <CartProvider>
-            <Outlet />
-            <Toaster position="top-center" richColors />
-          </CartProvider>
-        </FavoritesProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <FavoritesProvider>
+            <CartProvider>
+              <Outlet />
+              <Toaster position="top-center" richColors />
+            </CartProvider>
+          </FavoritesProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
