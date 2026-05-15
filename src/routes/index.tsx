@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight, Sparkles, Truck, ShieldCheck } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
@@ -42,40 +43,7 @@ function HomePage() {
 
   return (
     <Layout>
-      {/* HERO */}
-      <section className="relative overflow-hidden bg-secondary/40">
-        <div className="container-edit grid lg:grid-cols-2 gap-10 items-center py-16 lg:py-24">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.3em] text-gold mb-6">Nouvelle collection</p>
-            <h1 className="font-display text-5xl md:text-7xl leading-[0.95] tracking-tight">
-              L'art du parfum,<br />
-              <span className="italic">accessible</span> à tous.
-            </h1>
-            <p className="mt-6 max-w-md text-muted-foreground">
-              De bonnes senteurs pour tous les budgets. Une sélection de fragrances raffinées, livrées rapidement via WhatsApp.
-            </p>
-            <div className="mt-10 flex items-center gap-6">
-              <Link to="/catalogue" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-7 py-3.5 text-xs uppercase tracking-[0.2em] hover:bg-primary/90 transition-colors">
-                Voir les parfums <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link to="/about" className="link-underline">Notre histoire</Link>
-            </div>
-          </div>
-          <div className="relative">
-            <img
-              src={heroImg}
-              alt="Parfum signature Your Fragrance Shop"
-              width={1280}
-              height={1280}
-              className="w-full h-[500px] lg:h-[640px] object-cover"
-            />
-            <div className="absolute -bottom-6 -left-6 hidden md:block bg-background border border-border px-6 py-4">
-              <p className="font-display text-2xl">100ml</p>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Eau de parfum</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ParallaxHero />
 
       {/* CATEGORIES */}
       <section className="container-edit py-20">
