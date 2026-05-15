@@ -113,3 +113,65 @@ function HomePage() {
     </Layout>
   );
 }
+
+function ParallaxHero() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [offset, setOffset] = useState(0);
+
+  useEffect(() => {
+    const onScroll = () => {
+      if (!ref.current) return;
+      const rect = ref.current.getBoundingClientRect();
+      // Only animate while hero is in/near viewport
+      if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+      // Subtle parallax: bg moves slower than scroll
+      setOffset(-rect.top * 0.25);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <section
+      ref={ref}
+      className="relative overflow-hidden h-[88vh] min-h-[600px] max-h-[900px] bg-secondary"
+    >
+      <div
+        className="absolute inset-0 will-change-transform"
+        style={{
+          transform: `translate3d(0, ${offset}px, 0) scale(1.12)`,
+        }}
+      >
+        <img
+          src={heroImg}
+          alt="Flacon de parfum minimaliste"
+          width={1920}
+          height={1080}
+          className="h-full w-full object-cover"
+        />
+        {/* Tinted overlay so text stays legible in light & dark themes */}
+        <div className="absolute inset-0 bg-gradient-to-r from-background/85 via-background/50 to-transparent dark:from-background/90 dark:via-background/60" />
+      </div>
+
+      <div className="relative z-10 container-edit h-full flex items-center">
+        <div className="max-w-xl">
+          <p className="text-[11px] uppercase tracking-[0.3em] text-gold mb-6">Nouvelle collection</p>
+          <h1 className="font-display text-5xl md:text-7xl lg:text-8xl leading-[0.95] tracking-tight text-foreground">
+            Luxury &<br />
+            <span className="italic">Fragrance</span>
+          </h1>
+          <p className="mt-6 max-w-md text-muted-foreground">
+            De bonnes senteurs pour tous les budgets. Une sélection de fragrances raffinées, livrées rapidement via WhatsApp.
+          </p>
+          <div className="mt-10 flex items-center gap-6">
+            <Link to="/catalogue" className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-7 py-3.5 text-xs uppercase tracking-[0.2em] hover:bg-primary/90 transition-colors">
+              Voir les parfums <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link to="/about" className="link-underline text-foreground">Notre histoire</Link>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
