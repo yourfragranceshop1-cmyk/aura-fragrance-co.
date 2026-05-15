@@ -4,17 +4,17 @@ import { Link } from "@tanstack/react-router";
 export function Logo({ variant = "full" }: { variant?: "full" | "mark" }) {
   if (variant === "mark") {
     return (
-      <span className="block h-10 w-10 rounded-full bg-secondary ring-1 ring-border overflow-hidden">
+      <span className="block h-9 w-9 rounded-full bg-secondary ring-1 ring-border overflow-hidden shrink-0">
         <img src={logo} alt="Your Fragrance Shop" className="h-full w-full object-cover" />
       </span>
     );
   }
   return (
-    <Link to="/" className="flex items-center gap-3">
-      <span className="block h-10 w-10 rounded-full bg-secondary ring-1 ring-border overflow-hidden">
+    <Link to="/" className="flex items-center gap-2 sm:gap-3 min-w-0">
+      <span className="block h-8 w-8 sm:h-10 sm:w-10 rounded-full bg-secondary ring-1 ring-border overflow-hidden shrink-0">
         <img src={logo} alt="Your Fragrance Shop logo" className="h-full w-full object-cover" />
       </span>
-      <span className="font-display text-lg tracking-[0.2em] uppercase">Your Fragrance Shop</span>
+      <span className="font-display text-sm sm:text-lg tracking-[0.15em] sm:tracking-[0.2em] uppercase truncate">Your Fragrance Shop</span>
     </Link>
   );
 }
