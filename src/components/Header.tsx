@@ -20,14 +20,14 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-      <div className="container-edit flex h-20 items-center justify-between">
-        <button className="md:hidden text-foreground" onClick={() => setOpen((v) => !v)} aria-label="Menu">
+      <div className="container-edit flex h-16 sm:h-20 items-center gap-2 sm:gap-4">
+        <button className="md:hidden text-foreground shrink-0" onClick={() => setOpen((v) => !v)} aria-label="Menu">
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
 
-        <Logo />
+        <div className="min-w-0 flex-1 md:flex-none"><Logo /></div>
 
-        <nav className="hidden md:flex items-center gap-10 text-[13px] tracking-[0.18em] uppercase text-foreground/80">
+        <nav className="hidden md:flex items-center gap-6 lg:gap-10 mx-auto text-[13px] tracking-[0.18em] uppercase text-foreground/80">
           {NAV.map((n) => (
             <Link key={n.to} to={n.to} className="hover:text-foreground transition-colors" activeProps={{ className: "text-foreground" }}>
               {n.label}
@@ -38,15 +38,15 @@ export function Header() {
           )}
         </nav>
 
-        <div className="flex items-center gap-4 text-foreground/80">
+        <div className="flex items-center gap-2 sm:gap-4 text-foreground/80 shrink-0">
           <ThemeToggle />
-          <Link to="/catalogue" className="hidden sm:inline-flex" aria-label="Recherche"><Search className="h-5 w-5" /></Link>
-          <Link to={user ? "/favoris" : "/login"} aria-label="Favoris"><Heart className="h-5 w-5" /></Link>
-          <Link to={user ? "/login" : "/login"} aria-label="Compte"><User className="h-5 w-5" /></Link>
+          <Link to="/catalogue" className="hidden sm:inline-flex" aria-label="Recherche"><Search className="h-4 w-4 sm:h-5 sm:w-5" /></Link>
+          <Link to={user ? "/favoris" : "/login"} aria-label="Favoris"><Heart className="h-4 w-4 sm:h-5 sm:w-5" /></Link>
+          <Link to={user ? "/login" : "/login"} aria-label="Compte"><User className="h-4 w-4 sm:h-5 sm:w-5" /></Link>
           <Link to="/panier" className="relative" aria-label="Panier">
-            <ShoppingBag className="h-5 w-5" />
+            <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5" />
             {count > 0 && (
-              <span className="absolute -top-2 -right-2 h-5 min-w-5 px-1 rounded-full bg-gold text-gold-foreground text-[10px] font-semibold flex items-center justify-center">
+              <span className="absolute -top-2 -right-2 h-4 min-w-4 sm:h-5 sm:min-w-5 px-1 rounded-full bg-gold text-gold-foreground text-[10px] font-semibold flex items-center justify-center">
                 {count}
               </span>
             )}
