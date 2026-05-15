@@ -45,28 +45,6 @@ function HomePage() {
     <Layout>
       <ParallaxHero />
 
-      {/* CATEGORIES */}
-      <section className="container-edit py-20">
-        <div className="text-center mb-12">
-          <p className="text-[11px] uppercase tracking-[0.3em] text-gold mb-3">Explorer</p>
-          <h2 className="font-display text-4xl md:text-5xl">Catégories</h2>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {CATEGORIES.map((c) => (
-            <Link
-              key={c.key}
-              to="/catalogue"
-              search={c.key === "bestseller" ? { bestseller: true } : { category: c.key }}
-              className="group relative aspect-[4/5] overflow-hidden bg-primary text-primary-foreground"
-            >
-              <div className="absolute inset-0 grid place-items-center">
-                <span className="font-display text-2xl md:text-3xl tracking-wide group-hover:text-gold transition-colors">{c.label}</span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
       {/* BESTSELLERS */}
       {bestsellers.length > 0 && (
         <section className="container-edit py-12">
