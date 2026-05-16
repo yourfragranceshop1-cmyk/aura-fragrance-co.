@@ -1,10 +1,10 @@
-import { Link } from "@tanstack/react-router";
-import { Heart, Menu, Search, ShoppingBag, User, X } from "lucide-react";
+import { Link, useLocation } from "@tanstack/react-router";
+import { Heart, Menu, Moon, Search, ShoppingBag, Sun, User, X } from "lucide-react";
 import { useState } from "react";
-import { Logo } from "./Logo";
-import { ThemeToggle } from "./ThemeToggle";
+import logo from "@/assets/logo.png";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const NAV = [
   { to: "/", label: "Accueil" },
@@ -13,59 +13,162 @@ const NAV = [
   { to: "/contact", label: "Contact" },
 ] as const;
 
+// Shared visual style for the 3 floating modules
+const islandBase =
+  "bg-black/55 dark:bg-black/60 backdrop-blur-md border border-white/10 text-white shadow-[0_8px_30px_rgba(0,0,0,0.25)]";
+
 export function Header() {
   const { count } = useCart();
   const { user, isAdmin } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [open, setOpen] = useState(false);
+  const isDark = theme === "dark";
+
+  const iconBtn =
+    "inline-flex h-9 w-9 items-center justify-center rounded-full text-white/85 hover:text-white transition-colors";
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/70">
-      <div className="container-edit flex h-16 sm:h-20 items-center gap-2 sm:gap-4">
-        <button className="md:hidden text-foreground shrink-0" onClick={() => setOpen((v) => !v)} aria-label="Menu">
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
+    <>
+      <header className="fixed top-0 inset-x-0 z-40 pt-3 sm:pt-5">
+        <div className="container-edit flex items-center justify-between gap-3">
+          {/* Left — Burger circle */}
+          <button
+            onClick={() => setOpen((v) => !v)}
+            aria-label="Menu"
+            className={`${islandBase} h-12 w-12 rounded-full inline-flex items-center justify-center shrink-0`}
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
 
-        <div className="min-w-0 flex-1 md:flex-none"><Logo /></div>
-
-        <nav className="hidden md:flex items-center gap-6 lg:gap-10 mx-auto text-[13px] tracking-[0.18em] uppercase text-foreground/80">
-          {NAV.map((n) => (
-            <Link key={n.to} to={n.to} className="hover:text-foreground transition-colors" activeProps={{ className: "text-foreground" }}>
-              {n.label}
-            </Link>
-          ))}
-          {isAdmin && (
-            <Link to="/admin" className="hover:text-gold transition-colors text-gold">Admin</Link>
-          )}
-        </nav>
-
-        <div className="flex items-center gap-2 sm:gap-4 text-foreground/80 shrink-0">
-          <ThemeToggle />
-          <Link to="/catalogue" className="hidden sm:inline-flex" aria-label="Recherche"><Search className="h-4 w-4 sm:h-5 sm:w-5" /></Link>
-          <Link to={user ? "/favoris" : "/login"} aria-label="Favoris"><Heart className="h-4 w-4 sm:h-5 sm:w-5" /></Link>
-          <Link to={user ? "/login" : "/login"} aria-label="Compte"><User className="h-4 w-4 sm:h-5 sm:w-5" /></Link>
-          <Link to="/panier" className="relative" aria-label="Panier">
-            <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5" />
-            {count > 0 && (
-              <span className="absolute -top-2 -right-2 h-4 min-w-4 sm:h-5 sm:min-w-5 px-1 rounded-full bg-gold text-gold-foreground text-[10px] font-semibold flex items-center justify-center">
-                {count}
-              </span>
-            )}
+          {/* Center — Identity pill */}
+          <Link
+            to="/"
+            className={`${islandBase} rounded-full px-4 py-1.5 flex flex-col items-center justify-center min-w-0`}
+          >
+            <span className="block h-8 w-8 sm:h-9 sm:w-9 rounded-full overflow-hidden ring-1 ring-white/15 bg-white/5 shrink-0">
+              <img src={logo} alt="Your Fragrance Shop" className="h-full w-full object-cover" />
+            </span>
+            <span className="mt-0.5 font-sans font-light text-[9px] sm:text-[10px] tracking-[0.28em] uppercase text-white/90 whitespace-nowrap">
+              Your Fragrance Shop
+            </span>
           </Link>
-        </div>
-      </div>
 
-      {open && (
-        <nav className="md:hidden border-t border-border bg-background">
-          <div className="container-edit py-4 flex flex-col gap-3 text-sm">
-            {NAV.map((n) => (
-              <Link key={n.to} to={n.to} onClick={() => setOpen(false)} className="py-2">
-                {n.label}
-              </Link>
-            ))}
-            {isAdmin && <Link to="/admin" onClick={() => setOpen(false)} className="py-2 text-gold">Admin</Link>}
+          {/* Right — Actions pill */}
+          <div className={`${islandBase} h-12 rounded-full px-1.5 flex items-center gap-0.5 shrink-0`}>
+            <Link to="/catalogue" aria-label="Recherche" className={iconBtn}>
+              <Search className="h-[18px] w-[18px]" />
+            </Link>
+            <Link to={user ? "/favoris" : "/login"} aria-label="Favoris" className={iconBtn}>
+              <Heart className="h-[18px] w-[18px]" />
+            </Link>
+            <button
+              onClick={toggleTheme}
+              aria-label={isDark ? "Thème clair" : "Thème sombre"}
+              className={iconBtn}
+            >
+              {isDark ? <Sun className="h-[18px] w-[18px]" /> : <Moon className="h-[18px] w-[18px]" />}
+            </button>
+            <Link to="/panier" aria-label="Panier" className={`${iconBtn} relative`}>
+              <ShoppingBag className="h-[18px] w-[18px]" />
+              {count > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 rounded-full bg-gold text-gold-foreground text-[10px] font-semibold flex items-center justify-center">
+                  {count}
+                </span>
+              )}
+            </Link>
+            <Link to="/login" aria-label="Compte" className={iconBtn}>
+              <User className="h-[18px] w-[18px]" />
+            </Link>
           </div>
-        </nav>
+        </div>
+      </header>
+
+      {/* Spacer so content isn't hidden under floating bar */}
+      <div aria-hidden className="h-[72px] sm:h-[88px]" />
+
+      {/* Slide-down nav drawer */}
+      {open && (
+        <>
+          <div
+            className="fixed inset-0 z-30 bg-black/40 backdrop-blur-sm"
+            onClick={() => setOpen(false)}
+          />
+          <nav className="fixed top-[76px] sm:top-[92px] left-3 right-3 sm:left-6 sm:right-6 z-40 rounded-2xl bg-black/70 backdrop-blur-md border border-white/10 text-white p-4 shadow-2xl">
+            <ul className="flex flex-col gap-1 text-sm tracking-[0.18em] uppercase">
+              {NAV.map((n) => (
+                <li key={n.to}>
+                  <Link
+                    to={n.to}
+                    onClick={() => setOpen(false)}
+                    className="block py-2 px-2 rounded hover:bg-white/10"
+                    activeProps={{ className: "block py-2 px-2 rounded bg-white/10 text-gold" }}
+                  >
+                    {n.label}
+                  </Link>
+                </li>
+              ))}
+              {isAdmin && (
+                <li>
+                  <Link
+                    to="/admin"
+                    onClick={() => setOpen(false)}
+                    className="block py-2 px-2 rounded text-gold hover:bg-white/10"
+                  >
+                    Admin
+                  </Link>
+                </li>
+              )}
+            </ul>
+          </nav>
+        </>
       )}
-    </header>
+    </>
+  );
+}
+
+const LABELS: Record<string, string> = {
+  catalogue: "Catalogue",
+  about: "À propos",
+  contact: "Contact",
+  panier: "Panier",
+  favoris: "Favoris",
+  login: "Connexion",
+  admin: "Admin",
+  produit: "Produit",
+};
+
+export function Breadcrumbs() {
+  const location = useLocation();
+  const segments = location.pathname.split("/").filter(Boolean);
+  if (segments.length === 0) return null;
+
+  let acc = "";
+  const crumbs = segments.map((seg, i) => {
+    acc += "/" + seg;
+    const isLast = i === segments.length - 1;
+    const label = LABELS[seg] ?? decodeURIComponent(seg);
+    return { to: acc, label, isLast };
+  });
+
+  return (
+    <nav aria-label="Fil d'Ariane" className="container-edit pt-2 pb-4">
+      <ol className="flex flex-wrap items-center gap-1.5 text-[11px] tracking-[0.18em] uppercase text-muted-foreground">
+        <li>
+          <Link to="/" className="hover:text-foreground transition-colors">Accueil</Link>
+        </li>
+        {crumbs.map((c) => (
+          <li key={c.to} className="flex items-center gap-1.5">
+            <span aria-hidden className="text-muted-foreground/50">/</span>
+            {c.isLast ? (
+              <span className="text-foreground">{c.label}</span>
+            ) : (
+              <Link to={c.to as any} className="hover:text-foreground transition-colors">
+                {c.label}
+              </Link>
+            )}
+          </li>
+        ))}
+      </ol>
+    </nav>
   );
 }
