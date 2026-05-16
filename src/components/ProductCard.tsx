@@ -30,7 +30,7 @@ export function ProductCard({ product }: { product: Product }) {
           <button
             type="button"
             onClick={(e) => { e.preventDefault(); toggle(product.id); }}
-            className={`absolute top-3 left-3 grid place-items-center h-9 w-9 rounded-full bg-background/80 backdrop-blur border border-border transition-colors ${fav ? "text-destructive" : "text-foreground/70 hover:text-foreground"}`}
+            className={`absolute bottom-3 left-3 grid place-items-center h-9 w-9 rounded-full bg-background/80 backdrop-blur border border-border transition-colors ${fav ? "text-destructive" : "text-foreground/70 hover:text-foreground"}`}
             aria-label="Favori"
           >
             <Heart className={`h-4 w-4 ${fav ? "fill-current" : ""}`} />
