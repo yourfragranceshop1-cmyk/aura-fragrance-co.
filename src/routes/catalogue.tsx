@@ -78,21 +78,36 @@ function CataloguePage() {
         </div>
 
         {/* Filters */}
-        <div className="flex flex-wrap gap-3 justify-center mb-12 text-xs uppercase tracking-[0.16em]">
-          {(["homme", "femme", "unisexe"] as const).map((c) => (
-            <button
-              key={c}
-              onClick={() => update({ category: search.category === c ? undefined : c })}
-              className={`px-4 py-2 border transition ${search.category === c ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-foreground"}`}
-            >{c}</button>
-          ))}
-          {[30, 50, 100].map((ml) => (
-            <button
-              key={ml}
-              onClick={() => update({ contenance: search.contenance === ml ? undefined : ml })}
-              className={`px-4 py-2 border transition ${search.contenance === ml ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-foreground"}`}
-            >{ml}ml</button>
-          ))}
+        <div className="flex flex-wrap gap-3 justify-center items-center mb-12 text-xs uppercase tracking-[0.16em]">
+          <select
+            value={search.category ?? ""}
+            onChange={(e) => update({ category: (e.target.value || undefined) as typeof search.category })}
+            className="px-4 py-2 border border-border bg-background uppercase tracking-[0.16em] text-xs"
+          >
+            <option value="">Catégorie</option>
+            <option value="femme">Femme</option>
+            <option value="homme">Homme</option>
+            <option value="unisexe">Unisexe</option>
+          </select>
+          <select
+            value={search.contenance ?? ""}
+            onChange={(e) => update({ contenance: e.target.value ? Number(e.target.value) : undefined })}
+            className="px-4 py-2 border border-border bg-background uppercase tracking-[0.16em] text-xs"
+          >
+            <option value="">Contenance</option>
+            <option value="30">30 ml</option>
+            <option value="50">50 ml</option>
+            <option value="100">100 ml</option>
+          </select>
+          <select
+            value={search.sort ?? "new"}
+            onChange={(e) => update({ sort: e.target.value as "new" | "price_asc" | "price_desc" })}
+            className="px-4 py-2 border border-border bg-background uppercase tracking-[0.16em] text-xs"
+          >
+            <option value="new">Nouveautés</option>
+            <option value="price_asc">Prix ↑</option>
+            <option value="price_desc">Prix ↓</option>
+          </select>
           <button
             onClick={() => update({ bestseller: search.bestseller ? undefined : true })}
             className={`px-4 py-2 border transition ${search.bestseller ? "bg-gold text-gold-foreground border-gold" : "border-border hover:border-foreground"}`}
@@ -101,15 +116,6 @@ function CataloguePage() {
             onClick={() => update({ inStock: search.inStock ? undefined : true })}
             className={`px-4 py-2 border transition ${search.inStock ? "bg-primary text-primary-foreground border-primary" : "border-border hover:border-foreground"}`}
           >En stock</button>
-          <select
-            value={search.sort ?? "new"}
-            onChange={(e) => update({ sort: e.target.value as "new" | "price_asc" | "price_desc" })}
-            className="px-4 py-2 border border-border bg-background uppercase tracking-[0.16em] text-xs"
-          >
-            <option value="new">Nouveautés</option>
-            <option value="price_asc">Prix croissant</option>
-            <option value="price_desc">Prix décroissant</option>
-          </select>
         </div>
 
         {isLoading ? (
@@ -117,7 +123,7 @@ function CataloguePage() {
         ) : filtered.length === 0 ? (
           <p className="text-center text-muted-foreground py-20">Aucun parfum ne correspond à votre recherche.</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 lg:gap-8">
             {filtered.map((p) => <ProductCard key={p.id} product={p} />)}
           </div>
         )}
