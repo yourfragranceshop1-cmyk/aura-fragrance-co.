@@ -40,17 +40,13 @@ export function Header() {
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
 
-          {/* Center — Identity pill */}
+          {/* Center — Logo circle only */}
           <Link
             to="/"
-            className={`${islandBase} rounded-full px-4 py-1.5 flex flex-col items-center justify-center min-w-0`}
+            aria-label="Your Fragrance Shop"
+            className={`${islandBase} h-12 w-12 rounded-full inline-flex items-center justify-center overflow-hidden shrink-0 p-0`}
           >
-            <span className="block h-8 w-8 sm:h-9 sm:w-9 rounded-full overflow-hidden ring-1 ring-white/15 bg-white/5 shrink-0">
-              <img src={logo} alt="Your Fragrance Shop" className="h-full w-full object-cover" />
-            </span>
-            <span className="mt-0.5 font-sans font-light text-[9px] sm:text-[10px] tracking-[0.28em] uppercase text-white/90 whitespace-nowrap">
-              Your Fragrance Shop
-            </span>
+            <img src={logo} alt="Your Fragrance Shop" className="h-full w-full object-cover rounded-full" />
           </Link>
 
           {/* Right — Actions pill */}
