@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { z } from "zod";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
@@ -15,6 +15,7 @@ const searchSchema = z.object({
   bestseller: z.coerce.boolean().optional(),
   inStock: z.coerce.boolean().optional(),
   sort: z.enum(["new", "price_asc", "price_desc"]).optional(),
+  focus: z.coerce.boolean().optional(),
 });
 
 export const Route = createFileRoute("/catalogue")({
@@ -31,6 +32,14 @@ export const Route = createFileRoute("/catalogue")({
 function CataloguePage() {
   const search = Route.useSearch();
   const navigate = useNavigate({ from: "/catalogue" });
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (search.focus) {
+      inputRef.current?.focus();
+      navigate({ search: (prev: any) => ({ ...prev, focus: undefined }), replace: true });
+    }
+  }, [search.focus, navigate]);
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["products"],
@@ -70,6 +79,7 @@ function CataloguePage() {
         <div className="max-w-md mx-auto mb-8 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
+            ref={inputRef}
             value={search.q ?? ""}
             onChange={(e) => update({ q: e.target.value || undefined })}
             placeholder="Rechercher un parfum..."

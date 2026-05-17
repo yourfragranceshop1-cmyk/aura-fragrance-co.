@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
@@ -8,6 +8,12 @@ import type { Product } from "@/lib/types";
 import { useMemo } from "react";
 
 export const Route = createFileRoute("/favoris")({
+  beforeLoad: async () => {
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) {
+      throw redirect({ to: "/login", search: { redirect: "/favoris" } as any });
+    }
+  },
   head: () => ({ meta: [{ title: "Favoris — Your Fragrance Shop" }] }),
   component: FavoritesPage,
 });
