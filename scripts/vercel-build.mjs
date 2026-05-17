@@ -41,14 +41,12 @@ mkdirSync(FUNC_DIR, { recursive: true });
 console.log("\n📦 Copying client assets to .vercel/output/static/...");
 cpSync(join(ROOT, "dist", "client"), STATIC_DIR, { recursive: true });
 
-// ── 5. Copy server bundle → function ────────────────────────────────
-console.log("📦 Copying server bundle to .vercel/output/functions/ssr.func/server/...");
-cpSync(join(ROOT, "dist", "server"), join(FUNC_DIR, "server"), { recursive: true });
+// ── 6. Bundle function and all node_modules using esbuild ───────────
+console.log("⚡ Bundling serverless function and all dependencies with esbuild...");
 
-// ── 6. Create function entry point ──────────────────────────────────
-console.log("⚡ Creating serverless function entry point...");
+const tempEntryPath = join(ROOT, "dist", "temp-entry.mjs");
 writeFileSync(
-  join(FUNC_DIR, "index.mjs"),
+  tempEntryPath,
   `import server from "./server/server.js";
 
 export default async function handler(req, res) {
@@ -113,6 +111,17 @@ export default async function handler(req, res) {
 `
 );
 
+const outFilePath = join(FUNC_DIR, "index.mjs");
+execSync(
+  `npx esbuild "${tempEntryPath}" --bundle --platform=node --format=esm --target=node20 --minify --outfile="${outFilePath}"`,
+  { stdio: "inherit" }
+);
+
+// Clean temporary entry
+if (existsSync(tempEntryPath)) {
+  rmSync(tempEntryPath);
+}
+
 // ── 7. Create function config (.vc-config.json) ─────────────────────
 writeFileSync(
   join(FUNC_DIR, ".vc-config.json"),
@@ -130,7 +139,7 @@ writeFileSync(
 );
 
 // ── 8. Create Vercel output config.json ─────────────────────────────
-console.log("📝 Writing .vercel/output/config.json...\n");
+console.log("\n📝 Writing .vercel/output/config.json...\n");
 writeFileSync(
   join(OUTPUT, "config.json"),
   JSON.stringify(
@@ -150,4 +159,4 @@ writeFileSync(
 
 console.log("✅ Vercel Build Output API structure created successfully!");
 console.log("   .vercel/output/static/     ← client assets");
-console.log("   .vercel/output/functions/  ← SSR serverless function\n");
+console.log("   .vercel/output/functions/  ← SSR serverless function (completely bundled!)\n");
