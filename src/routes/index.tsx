@@ -158,9 +158,6 @@ function TrustMarquee() {
       </div>
     </section>);
 }
-    </Layout>
-  );
-}
 
 function ParallaxHero() {
   const ref = useRef<HTMLDivElement>(null);
