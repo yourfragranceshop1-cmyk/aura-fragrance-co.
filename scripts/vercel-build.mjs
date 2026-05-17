@@ -51,8 +51,64 @@ writeFileSync(
   join(FUNC_DIR, "index.mjs"),
   `import server from "./server/server.js";
 
-export default async function handler(request) {
-  return server.fetch(request, {}, {});
+export default async function handler(req, res) {
+  try {
+    // Build Web Standard Request from Node.js IncomingMessage
+    const proto = req.headers["x-forwarded-proto"] || "https";
+    const host = req.headers["x-forwarded-host"] || req.headers.host || "localhost";
+    const url = new URL(req.url || "/", proto + "://" + host);
+
+    const headers = new Headers();
+    for (const [key, val] of Object.entries(req.headers)) {
+      if (val) headers.set(key, Array.isArray(val) ? val.join(", ") : val);
+    }
+
+    const hasBody = req.method !== "GET" && req.method !== "HEAD";
+
+    // Collect body for non-GET requests
+    let body = undefined;
+    if (hasBody) {
+      const chunks = [];
+      for await (const chunk of req) chunks.push(chunk);
+      body = Buffer.concat(chunks);
+    }
+
+    const request = new Request(url.toString(), {
+      method: req.method,
+      headers,
+      body,
+    });
+
+    // Call TanStack Start's fetch handler
+    const response = await server.fetch(request, {}, {});
+
+    // Write Web Standard Response back to Node.js ServerResponse
+    res.statusCode = response.status;
+    for (const [key, val] of response.headers.entries()) {
+      res.setHeader(key, val);
+    }
+
+    if (response.body) {
+      const reader = response.body.getReader();
+      const pump = async () => {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          res.write(value);
+        }
+      };
+      await pump();
+    } else {
+      const buf = await response.arrayBuffer();
+      res.write(Buffer.from(buf));
+    }
+    res.end();
+  } catch (err) {
+    console.error("SSR handler error:", err);
+    res.statusCode = 500;
+    res.setHeader("content-type", "text/html; charset=utf-8");
+    res.end("<h1>Internal Server Error</h1><p>" + (err.message || "Unknown error") + "</p>");
+  }
 }
 `
 );
@@ -65,6 +121,7 @@ writeFileSync(
       runtime: "nodejs20.x",
       handler: "index.mjs",
       launcherType: "Nodejs",
+      maxDuration: 30,
       supportsResponseStreaming: true,
     },
     null,
