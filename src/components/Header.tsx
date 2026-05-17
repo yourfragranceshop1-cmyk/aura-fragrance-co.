@@ -5,6 +5,7 @@ import logo from "@/assets/logo.png";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useFavorites } from "@/contexts/FavoritesContext";
 
 const NAV = [
   { to: "/", label: "Accueil" },
@@ -21,6 +22,8 @@ export function Header() {
   const { count } = useCart();
   const { user, isAdmin } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { ids: favIds } = useFavorites();
+  const favCount = favIds.size;
   const [open, setOpen] = useState(false);
   const isDark = theme === "dark";
 
@@ -51,11 +54,16 @@ export function Header() {
 
           {/* Right — Actions pill */}
           <div className={`${islandBase} h-12 rounded-full px-1.5 flex items-center gap-0.5 shrink-0`}>
-            <Link to="/catalogue" aria-label="Recherche" className={iconBtn}>
+            <Link to="/catalogue" search={{ focus: true } as any} aria-label="Recherche" className={iconBtn}>
               <Search className="h-[18px] w-[18px]" />
             </Link>
-            <Link to={user ? "/favoris" : "/login"} aria-label="Favoris" className={iconBtn}>
+            <Link to={user ? "/favoris" : "/login"} aria-label="Favoris" className={`${iconBtn} relative`}>
               <Heart className="h-[18px] w-[18px]" />
+              {favCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 rounded-full bg-gold text-gold-foreground text-[10px] font-semibold flex items-center justify-center">
+                  {favCount}
+                </span>
+              )}
             </Link>
             <button
               onClick={toggleTheme}
