@@ -29,7 +29,12 @@ export function ProductCard({ product }: { product: Product }) {
           <div className="absolute top-3 right-3"><StockBadge stock={product.stock} /></div>
           <button
             type="button"
-            onClick={(e) => { e.preventDefault(); toggle(product.id); }}
+            onClick={(e) => {
+              e.preventDefault();
+              const wasFav = fav;
+              toggle(product.id);
+              toast.success(wasFav ? "Retiré des favoris" : "Ajouté aux favoris");
+            }}
             className={`absolute bottom-3 left-3 grid place-items-center h-9 w-9 rounded-full bg-background/80 backdrop-blur border border-border transition-colors ${fav ? "text-destructive" : "text-foreground/70 hover:text-foreground"}`}
             aria-label="Favori"
           >

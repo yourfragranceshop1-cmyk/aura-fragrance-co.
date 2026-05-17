@@ -1,7 +1,7 @@
 export const WHATSAPP_NUMBER = "22942238684";
 export const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}`;
-export const INSTAGRAM_URL = "https://instagram.com";
-export const TIKTOK_URL = "https://tiktok.com";
+export const INSTAGRAM_URL = "https://www.instagram.com/yourfragranceshop1";
+export const TIKTOK_URL = "https://www.tiktok.com/@your.fragrance.sh";
 
 export function formatPrice(value: number): string {
   return new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }).format(value) + " FCFA";
