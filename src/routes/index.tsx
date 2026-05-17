@@ -72,22 +72,92 @@ function HomePage() {
         </section>
       )}
 
-      {/* TRUST */}
-      <section className="bg-primary text-primary-foreground py-20">
-        <div className="container-edit grid md:grid-cols-3 gap-12 text-center">
-          {[
-            { icon: Sparkles, title: "Qualité sélectionnée", text: "Chaque fragrance est choisie avec soin pour son authenticité." },
-            { icon: Truck, title: "Commande rapide", text: "Passez commande en quelques clics directement via WhatsApp." },
-            { icon: ShieldCheck, title: "Prix accessibles", text: "Le luxe à portée de tous, sans compromis sur la qualité." },
-          ].map((t) => (
-            <div key={t.title} className="flex flex-col items-center">
-              <t.icon className="h-7 w-7 text-gold mb-4" />
+      <TrustMarquee />
+    </Layout>
+  );
+}
+
+const TRUST_ITEMS = [
+  { icon: Sparkles, title: "Qualité sélectionnée", text: "Chaque fragrance est choisie avec soin pour son authenticité." },
+  { icon: Truck, title: "Commande rapide", text: "Passez commande en quelques clics directement via WhatsApp." },
+  { icon: ShieldCheck, title: "Prix accessibles", text: "Le luxe à portée de tous, sans compromis sur la qualité." },
+];
+
+function TrustMarquee() {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const offsetRef = useRef(0);
+  const setWidthRef = useRef(0);
+  const draggingRef = useRef(false);
+  const lastXRef = useRef(0);
+  const SPEED = 0.4; // px/frame ≈ slow
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const measure = () => {
+      // We render TRUST_ITEMS x3; one set = scrollWidth / 3
+      setWidthRef.current = track.scrollWidth / 3;
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(track);
+
+    let raf = 0;
+    const tick = () => {
+      if (!draggingRef.current) offsetRef.current -= SPEED;
+      const w = setWidthRef.current;
+      if (w > 0) {
+        if (offsetRef.current <= -w) offsetRef.current += w;
+        if (offsetRef.current > 0) offsetRef.current -= w;
+      }
+      track.style.transform = `translate3d(${offsetRef.current}px,0,0)`;
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => { cancelAnimationFrame(raf); ro.disconnect(); };
+  }, []);
+
+  const onDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    draggingRef.current = true;
+    lastXRef.current = e.clientX;
+    e.currentTarget.setPointerCapture(e.pointerId);
+  };
+  const onMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!draggingRef.current) return;
+    const dx = e.clientX - lastXRef.current;
+    lastXRef.current = e.clientX;
+    offsetRef.current += dx;
+  };
+  const onUp = () => { draggingRef.current = false; };
+
+  const cards = [...TRUST_ITEMS, ...TRUST_ITEMS, ...TRUST_ITEMS];
+
+  return (
+    <section className="bg-secondary/60 py-20 overflow-hidden border-y border-border">
+      <div
+        className="select-none cursor-grab active:cursor-grabbing touch-pan-y"
+        onPointerDown={onDown}
+        onPointerMove={onMove}
+        onPointerUp={onUp}
+        onPointerCancel={onUp}
+      >
+        <div ref={trackRef} className="flex gap-5 sm:gap-6 will-change-transform" style={{ width: "max-content" }}>
+          {cards.map((t, i) => (
+            <article
+              key={i}
+              className="shrink-0 w-[78vw] sm:w-80 bg-card text-card-foreground border border-border rounded-2xl px-8 py-10 flex flex-col items-center text-center shadow-sm"
+            >
+              <div className="h-14 w-14 rounded-full bg-gold/15 border border-gold/30 flex items-center justify-center mb-5">
+                <t.icon className="h-6 w-6 text-gold" />
+              </div>
               <h3 className="font-display text-2xl mb-2">{t.title}</h3>
-              <p className="text-sm text-primary-foreground/70 max-w-xs">{t.text}</p>
-            </div>
+              <p className="text-sm text-muted-foreground">{t.text}</p>
+            </article>
           ))}
         </div>
-      </section>
+      </div>
+    </section>);
+}
     </Layout>
   );
 }
